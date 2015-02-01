@@ -5,53 +5,78 @@
  * Licensed under the MIT license.
  */
 
-var parse = require('parse-copyright');
+var parseAuthor = require('parse-author');
+var parseCopyright = require('parse-copyright');
+var updateYear = require('update-year');
 var extend = require('extend-shallow');
+var omit = require('omit-empty');
 var currentYear = +require('year')();
+var leven = require('leven');
 var jsdiff = require('diff');
 var chalk = require('chalk');
+var pkg = require('load-pkg');
+var _ = require('lodash');
+
+/**
+ * Parse a copyright statement and return a new, updated
+ * copyright statement.
+ *
+ * @param  {String} `str`
+ * @param  {Object} `options`
+ * @return {String}
+ */
+
+function updateCopyright (str, options) {
+  return parse(str, options).updated;
+}
+
+function parse(str, options) {
+  var opts = extend({}, options);
+  var matches = parseCopyright(str);
+  var len = matches.length;
+  if (len === 0) { len = 1; }
+
+  var res = '', i = -1;
+
+  while (len--) {
+    res += copyright(matches[++i], options);
+  }
+
+  if (opts.diff) { diff(str, res); }
+  var obj = {};
+  obj.original = str;
+  obj.matches = matches;
+  obj.updated = res;
+  return obj;
+}
+
+function getAuthor(match) {
+  if (!match.author) { return pkg.author; }
+
+  var author = clean(match.author);
+  if (pkg.author) {
+    if (typeof pkg.author === 'string') {
+      pkg.author = clean(parseAuthor(pkg.author).name);
+    } else if (typeof pkg.author === 'object') {
+      pkg.author = clean(pkg.author.name);
+    }
+    if (leven(author, pkg.author) < 2) {
+      author = pkg.author;
+    }
+  }
+  return author;
+}
+
+var template = '<%= prefix %><%= symbol ? (" " + symbol + " ") : "" %><%= years %>, <%= author %>.';
 
 
-module.exports = function update(str, options) {
-  var opts = extend({year: currentYear, verbose: true}, options);
-  var re = new RegExp('(Copyright[^\\d]*)(20\\d{2})([^\\n]+)', 'i');
-
-  var matches = parse(str);
-  console.log(matches)
-
-  // var match = str.match(re) || [];
-
-  // var prefix = opts.prefix || match[1];
-  // var author = cleanAuthor(opts.author || match[3]);
-  // var prev = opts.prev || match[2] || opts.year;
-  // var year = opts.year;
-
-  // var range = (+prev === +year ? year : (prev + '-' + year)).toString();
-  // var updated = (prefix + range + formatAuthor(author));
-  // var orig = match[0];
-  // str = str.replace(orig, updated);
-
-  // var ctx = {};
-  // ctx.prefix = prefix;
-  // ctx.author = author;
-  // ctx.prev = prev;
-  // ctx.year = year;
-
-  // ctx.range = range;
-  // ctx.updated = updated;
-  // ctx.original = orig;
-  // render(ctx);
-
-  // if (opts.verbose === true) {
-  //   diff(orig, updated);
-  //   // console.log(prev + ' => ' + range);
-  // }
-  return str;
-};
-
-
-function render(context) {
-  console.log(context)
+function copyright(match, options) {
+  var defaults = {year: currentYear, prefix: 'Copyright', symbol: '(c)'};
+  var opts = extend({verbose: true, template: template}, options);
+  var ctx = extend(defaults, omit(match));
+  ctx.author = opts.author || getAuthor(ctx);
+  ctx.years = opts.year || updateYear(ctx.dateRange || currentYear.toString());
+  return _.template(opts.template)(ctx);
 }
 
 function diff(a, b) {
@@ -62,11 +87,13 @@ function diff(a, b) {
 
     process.stderr.write(color(part.value));
   });
-  console.log()
+  console.log();
 }
 
-function formatAuthor(str) {
-  return ', ' + str + '.';
+function clean(str) {
+  return str.replace(/^\W+|\W+$/g, '');
 }
 
-var template = '<%= prefix %><%= symbol ? ' ' + symbol + ' ' %><%= date %>, <%= author %>.';
+
+module.exports = updateCopyright;
+module.exports.parse = parse;
