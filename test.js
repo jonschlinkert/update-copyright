@@ -19,6 +19,11 @@ describe('update', function () {
     assert.equal(update('Copyright 2015, Jon Schlinkert.'), 'Copyright (c) 2015, Jon Schlinkert.');
   });
 
+  it('should correct the author using the one from package.json:', function () {
+    assert.equal(update('Copyright (c) 2013, Jon Schlinert.'), 'Copyright (c) 2013-2015, Jon Schlinkert.');
+    assert.equal(update('Copyright (c) 2013, Jon Shliner.'), 'Copyright (c) 2013-2015, Jon Schlinkert.');
+  });
+
   it('should update a range of years:', function () {
     assert.equal(update('Copyright (c) 2013-2014, Jon Schlinkert, Brian Woodward.'), 'Copyright (c) 2013-2015, Jon Schlinkert, Brian Woodward.');
     assert.equal(update('Copyright (c) 2009, 2011-2014, Jon Schlinkert, Brian Woodward.'), 'Copyright (c) 2009, 2011-2015, Jon Schlinkert, Brian Woodward.');
@@ -29,10 +34,6 @@ describe('update', function () {
     assert.equal(update('Copyright (c) 2013-2015, Jon Schlinkert, Brian Woodward.'), 'Copyright (c) 2013-2015, Jon Schlinkert, Brian Woodward.');
     assert.equal(update('Copyright (c) 2014, Jon Schlinkert.'), 'Copyright (c) 2014-2015, Jon Schlinkert.');
     assert.equal(update('Copyright (c) 2015, Jon Schlinkert.'), 'Copyright (c) 2015, Jon Schlinkert.');
-  });
-
-  it('should corrent the author using the one from package.json:', function () {
-    assert.equal(update('Copyright (c) 2013, Jon Schlinert.'), 'Copyright (c) 2013-2015, Jon Schlinkert.');
   });
 
   it('should allow an author to be passed:', function () {
