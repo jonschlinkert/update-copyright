@@ -39,7 +39,7 @@ function parse(str, options) {
   var res = '', i = -1;
 
   while (len--) {
-    res += copyright(matches[++i], options);
+    res += copyright(matches[++i], opts);
   }
 
   if (opts.diff) { diff(str, res); }
@@ -50,7 +50,7 @@ function parse(str, options) {
   return obj;
 }
 
-function getAuthor(match) {
+function getAuthor(match, opts) {
   if (!match.author) { return pkg.author; }
 
   var author = clean(match.author);
@@ -60,7 +60,8 @@ function getAuthor(match) {
     } else if (typeof pkg.author === 'object') {
       pkg.author = clean(pkg.author.name);
     }
-    if (leven(author, pkg.author) < 2) {
+    // detect probable misspellings
+    if (leven(author, pkg.author) < (opts && opts.distance || 4)) {
       author = pkg.author;
     }
   }
@@ -73,7 +74,7 @@ var template = '<%= prefix %><%= symbol ? (" " + symbol + " ") : "" %><%= years 
 function copyright(match, options) {
   var defaults = {year: currentYear, prefix: 'Copyright', symbol: '(c)'};
   var opts = extend({verbose: true, template: template}, options);
-  var ctx = extend(defaults, omit(match));
+  var ctx = extend(defaults, opts, omit(match));
   ctx.author = opts.author || getAuthor(ctx);
   ctx.years = opts.year || updateYear(ctx.dateRange || currentYear.toString());
   return _.template(opts.template)(ctx);
@@ -81,10 +82,7 @@ function copyright(match, options) {
 
 function diff(a, b) {
   jsdiff.diffChars(a, b).forEach(function (part) {
-    var color = part.added
-      ? chalk.green
-      : (part.removed ? chalk.red : chalk.gray);
-
+    var color = part.added ? chalk.green : (part.removed ? chalk.red : chalk.gray);
     process.stderr.write(color(part.value));
   });
   console.log();
