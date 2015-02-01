@@ -1,6 +1,6 @@
 {
   "name": "update-copyright",
-  "description": "Update the copyright statement in a string based on globally stored template and values.",
+  "description": "Update a copyright statement with the current year. Also makes minor corrections.",
   "version": "0.1.0",
   "homepage": "https://github.com/jonschlinkert/update-copyright",
   "author": {

@@ -1,6 +1,6 @@
 # update-copyright [![NPM version](https://badge.fury.io/js/update-copyright.svg)](http://badge.fury.io/js/update-copyright)
 
-> Update the copyright statement in a string based on globally stored template and values.
+> Update a copyright statement with the current year. Also makes minor corrections.
 
 ## Install with [npm](npmjs.org)
 
