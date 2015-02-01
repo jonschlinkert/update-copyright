@@ -22,25 +22,27 @@
   "engines": {
     "node": ">=0.10.0"
   },
-  "preferGlobal": true,
   "scripts": {
-    "test": "mocha -R spec"
+    "test": "mocha"
   },
   "devDependencies": {
-    "mocha": "*",
-    "should": "*"
+    "mocha": "^2.1.0"
   },
-  "keywords": [],
+  "keywords": [
+    "copyright",
+    "update"
+  ],
   "dependencies": {
     "chalk": "^0.5.1",
     "diff": "^1.2.2",
     "extend-shallow": "^0.2.0",
-    "globby": "^1.1.0",
+    "leven": "^1.0.1",
     "load-pkg": "^1.0.0",
-    "minimist": "^1.1.0",
+    "lodash": "^3.0.1",
+    "omit-empty": "^0.3.0",
     "parse-author": "^0.1.0",
-    "parse-copyright": "^0.1.0",
-    "write": "^0.1.1",
+    "parse-copyright": "^0.3.1",
+    "update-year": "^0.5.0",
     "year": "^0.2.1"
   }
 }
