@@ -1,0 +1,46 @@
+{
+  "name": "update-copyright",
+  "description": "Update the copyright statement in a string based on globally stored template and values.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/jonschlinkert/update-copyright",
+  "author": {
+    "name": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jonschlinkert/update-copyright.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/update-copyright/issues"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/jonschlinkert/update-copyright/blob/master/LICENSE-MIT"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "preferGlobal": true,
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "keywords": [],
+  "dependencies": {
+    "chalk": "^0.5.1",
+    "diff": "^1.2.2",
+    "extend-shallow": "^0.2.0",
+    "globby": "^1.1.0",
+    "load-pkg": "^1.0.0",
+    "minimist": "^1.1.0",
+    "parse-author": "^0.1.0",
+    "parse-copyright": "^0.1.0",
+    "write": "^0.1.1",
+    "year": "^0.2.1"
+  }
+}
