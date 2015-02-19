@@ -1,14 +1,14 @@
-/**
+/*!
  * update-copyright <https://github.com/jonschlinkert/update-copyright>
  *
- * Copyright (c) 2014-2015, Jon Schlinkert.
- * Licensed under the MIT license.
+ * Copyright (c) 2015, Jon Schlinkert.
+ * Licensed under the MIT License.
  */
 
 var parseAuthor = require('parse-author');
 var parseCopyright = require('parse-copyright');
 var updateYear = require('update-year');
-var extend = require('extend-shallow');
+var merge = require('merge-deep');
 var omit = require('omit-empty');
 var currentYear = +require('year')();
 var leven = require('leven');
@@ -31,7 +31,7 @@ function updateCopyright (str, options) {
 }
 
 function parse(str, options) {
-  var opts = extend({}, options);
+  var opts = merge({}, options);
   var matches = parseCopyright(str);
   var len = matches.length;
   if (len === 0) { len = 1; }
@@ -73,8 +73,8 @@ var template = '<%= prefix %><%= symbol ? (" " + symbol + " ") : "" %><%= years 
 
 function copyright(match, options) {
   var defaults = {year: currentYear, prefix: 'Copyright', symbol: '(c)'};
-  var opts = extend({verbose: true, template: template}, options);
-  var ctx = extend(defaults, opts, omit(match));
+  var opts = merge({verbose: true, template: template}, options);
+  var ctx = merge(defaults, opts, omit(match));
   ctx.author = opts.author || getAuthor(ctx);
   ctx.years = opts.year || updateYear(ctx.dateRange || currentYear.toString());
   return _.template(opts.template)(ctx);

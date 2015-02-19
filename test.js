@@ -1,8 +1,8 @@
 /*!
- * update-copyright <http://github.com/helpers/update-copyright>
+ * update-copyright <https://github.com/jonschlinkert/update-copyright>
  *
- * Copyright (c) 2013-2015, Jon Schlinkert.
- * Licensed under the MIT license.
+ * Copyright (c) 2015, Jon Schlinkert.
+ * Licensed under the MIT License.
  */
 
 var assert = require('assert');
@@ -65,18 +65,19 @@ describe('update', function () {
 
 describe('parse:', function () {
   it('should parse a copyright statement:', function () {
-    var parsed = update.parse('abc\nCopyright (c) 2015, Jon Schlinkert.\nxyz');
+    var parsed = update.parse('abc\nCopyright (c) 2014-2015, Jon Schlinkert.\nxyz');
     assert.deepEqual(parsed, {
-      original: 'abc\nCopyright (c) 2015, Jon Schlinkert.\nxyz',
+      original: 'abc\nCopyright (c) 2014-2015, Jon Schlinkert.\nxyz',
       matches: [{
-        statement: 'Copyright (c) 2015, Jon Schlinkert',
+        statement: 'Copyright (c) 2014-2015, Jon Schlinkert',
         prefix: 'Copyright',
         symbol: '(c)',
-        dateRange: '2015',
+        dateRange: '2014-2015',
+        first: '2014',
         latest: '2015',
         author: 'Jon Schlinkert'
       }],
-      updated: 'Copyright (c) 2015, Jon Schlinkert.'
+      updated: 'Copyright (c) 2014-2015, Jon Schlinkert.'
     });
   });
 });
