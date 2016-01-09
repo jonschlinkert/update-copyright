@@ -1,21 +1,14 @@
-/*!
+/**
  * update-copyright <https://github.com/jonschlinkert/update-copyright>
  *
- * Copyright (c) 2015, Jon Schlinkert.
- * Licensed under the MIT License.
+ * Copyright (c) 2014, Jon Schlinkert.
+ * Licensed under the MIT license.
  */
 
-var parseAuthor = require('parse-author');
-var parseCopyright = require('parse-copyright');
-var updateYear = require('update-year');
-var merge = require('merge-deep');
-var omit = require('omit-empty');
 var currentYear = +require('year')();
-var leven = require('leven');
-var jsdiff = require('diff');
-var chalk = require('chalk');
-var pkg = require('load-pkg');
-var _ = require('lodash');
+var regex = require('copyright-regex');
+var pkg = require('load-pkg')(process.cwd());
+var utils = require('./utils');
 
 /**
  * Parse a copyright statement and return a new, updated
@@ -26,72 +19,86 @@ var _ = require('lodash');
  * @return {String}
  */
 
-function updateCopyright (str, options) {
+function updateCopyright(str, options) {
+  if (typeof str === 'undefined') {
+    str = 'Copyright';
+  }
   return parse(str, options).updated;
 }
 
 function parse(str, options) {
-  var opts = merge({}, options);
-  var matches = parseCopyright(str);
-  var len = matches.length;
-  if (len === 0) { len = 1; }
+  var orig = detect(str);
+  orig = str;
+  var opts = utils.merge({}, options);
+  var match = utils.parseCopyright(orig);
+  var res = copyright(match[0], opts);
+  var replaced = str.split(orig).join(res);
 
-  var res = '', i = -1;
-
-  while (len--) {
-    res += copyright(matches[++i], opts);
-  }
-
-  if (opts.diff) { diff(str, res); }
   var obj = {};
-  obj.original = str;
-  obj.matches = matches;
-  obj.updated = res;
+  obj.input = str;
+  obj.orig = orig;
+  obj.match = match[0];
+  obj.revised = res;
+  obj.updated = replaced;
   return obj;
 }
 
 function getAuthor(match, opts) {
-  if (!match.author) { return pkg.author; }
+  if (!match.author) {
+    return pkg.author;
+  }
 
-  var author = clean(match.author);
+  var author = utils.strip(match.author);
   if (pkg.author) {
     if (typeof pkg.author === 'string') {
-      pkg.author = clean(parseAuthor(pkg.author).name);
+      pkg.author = utils.strip(utils.parseAuthor(pkg.author).name);
     } else if (typeof pkg.author === 'object') {
-      pkg.author = clean(pkg.author.name);
+      pkg.author = utils.strip(pkg.author.name);
     }
     // detect probable misspellings
-    if (leven(author, pkg.author) < (opts && opts.distance || 4)) {
+    if (utils.leven(author, pkg.author) < (opts && opts.distance || 4)) {
       author = pkg.author;
     }
   }
+
+  author = author.replace(/contributors/, '');
+  author = utils.strip(author);
   return author;
 }
 
+var defaults = {
+  year: currentYear,
+  prefix: 'Copyright',
+  symbol: '(c)'
+};
+
 var template = '<%= prefix %><%= symbol ? (" " + symbol + " ") : "" %><%= years %>, <%= author %>.';
 
-
 function copyright(match, options) {
-  var defaults = {year: currentYear, prefix: 'Copyright', symbol: '(c)'};
-  var opts = merge({verbose: true, template: template}, options);
-  var ctx = merge(defaults, opts, omit(match));
-  ctx.author = opts.author || getAuthor(ctx);
-  ctx.years = opts.year || updateYear(ctx.dateRange || currentYear.toString());
-  return _.template(opts.template)(ctx);
+  var opts = utils.merge({verbose: true, template: template}, options);
+  var engine = new utils.Engine(opts);
+
+  var ctx = utils.merge({}, defaults, opts, utils.omitEmpty(match));
+  ctx.years = opts.year || utils.updateYear(ctx.dateRange || currentYear.toString());
+  ctx.author = getAuthor(ctx);
+
+  return engine.render(opts.template, ctx);
 }
 
-function diff(a, b) {
-  jsdiff.diffChars(a, b).forEach(function (part) {
-    var color = part.added ? chalk.green : (part.removed ? chalk.red : chalk.gray);
-    process.stderr.write(color(part.value));
-  });
-  console.log();
-}
+function detect(str) {
+  var lines = str.split('\n');
+  var len = lines.length;
+  var re = regex();
 
-function clean(str) {
-  return str.replace(/^\W+|\W+$/g, '');
+  while (len--) {
+    var line = lines[len];
+    line = line.replace(/^[- \t\W._]+/, '');
+    if (/[^\w]Copyright.*\d{4}/.test(line)) {
+      return line;
+    }
+  }
+  return '';
 }
-
 
 module.exports = updateCopyright;
 module.exports.parse = parse;

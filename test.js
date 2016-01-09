@@ -9,6 +9,10 @@ var assert = require('assert');
 var update = require('./');
 
 describe('update', function () {
+  it('should return a copyright statement with the current year', function () {
+    assert.equal(update(), 'Copyright (c) 2015, Jon Schlinkert (https://github.com/jonschlinkert).');
+  });
+
   it('should update the year:', function () {
     assert.equal(update('Copyright (c) 2014, Jon Schlinkert.'), 'Copyright (c) 2014-2015, Jon Schlinkert.');
     assert.equal(update('Copyright (c) 2015, Jon Schlinkert.'), 'Copyright (c) 2015, Jon Schlinkert.');
@@ -65,10 +69,11 @@ describe('update', function () {
 
 describe('parse:', function () {
   it('should parse a copyright statement:', function () {
-    var parsed = update.parse('abc\nCopyright (c) 2014-2015, Jon Schlinkert.\nxyz');
+    var parsed = update.parse('abc\n * Copyright (c) 2014-2015, Jon Schlinkert.\nxyz');
     assert.deepEqual(parsed, {
-      original: 'abc\nCopyright (c) 2014-2015, Jon Schlinkert.\nxyz',
-      matches: [{
+      input: 'abc\n * Copyright (c) 2014-2015, Jon Schlinkert.\nxyz',
+      orig: 'Copyright (c) 2014-2015, Jon Schlinkert.',
+      match: {
         statement: 'Copyright (c) 2014-2015, Jon Schlinkert',
         prefix: 'Copyright',
         symbol: '(c)',
@@ -76,8 +81,9 @@ describe('parse:', function () {
         first: '2014',
         latest: '2015',
         author: 'Jon Schlinkert'
-      }],
-      updated: 'Copyright (c) 2014-2015, Jon Schlinkert.'
+      },
+      updated: 'abc\n * Copyright (c) 2014-2015, Jon Schlinkert.\nxyz',
+      revised: 'Copyright (c) 2014-2015, Jon Schlinkert.'
     });
   });
 });
