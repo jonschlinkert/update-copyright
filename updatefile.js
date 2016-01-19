@@ -15,8 +15,7 @@ module.exports = function(app, base, env) {
     }
 
     var parsed = copyright.parse(str);
-
-    // console.log(parsed)
+    console.log(parsed)
 
     next();
   });
