@@ -56,7 +56,9 @@
       "list": [
         "update",
         "update-year",
-        "year"
+        "year",
+        "copyright-regex",
+        "parse-copyright"
       ]
     },
     "reflinks": [

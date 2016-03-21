@@ -96,6 +96,8 @@ copyright('Copyright (c) 2015.', {author: 'Foo Bar'});
 
 ## Related projects
 
+* [copyright-regex](https://www.npmjs.com/package/copyright-regex): Regex for matching and parsing copyright statements. | [homepage](https://github.com/regexps/copyright-regex)
+* [parse-copyright](https://www.npmjs.com/package/parse-copyright): Parse copyright statement(s) into an array of copyright objects. | [homepage](https://github.com/jonschlinkert/parse-copyright)
 * [update](https://www.npmjs.com/package/update): Easily keep anything in your project up-to-date by installing the updaters you want to use… [more](https://www.npmjs.com/package/update) | [homepage](https://github.com/update/update)
 * [update-year](https://www.npmjs.com/package/update-year): Update or add the current year to a range of years in a string. | [homepage](https://github.com/jonschlinkert/update-year)
 * [year](https://www.npmjs.com/package/year): Simple utility to get the current year with 2 or 4 digits. | [homepage](https://github.com/jonschlinkert/year)
