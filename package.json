@@ -1,7 +1,7 @@
 {
   "name": "update-copyright",
   "description": "Update a copyright statement with the current year. Also makes minor corrections.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "homepage": "https://github.com/jonschlinkert/update-copyright",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/update-copyright",
