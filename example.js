@@ -8,7 +8,7 @@ var str = [
   ' *',
   ' * Copyright (c) 2014, Jon Schlinkert.',
   ' * Licensed under the MIT License.',
-  ' */'
+  ' */',
+  '',
+  'var foo = "bar";'
 ].join('\n');
-
-console.log(update(str))

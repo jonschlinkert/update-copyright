@@ -1,7 +1,7 @@
 {
   "name": "update-copyright",
   "description": "Update a copyright statement with the current year. Also makes minor corrections.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/jonschlinkert/update-copyright",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/update-copyright",
@@ -11,7 +11,7 @@
   "license": "MIT",
   "files": [
     "index.js",
-    "utils.js"
+    "lib"
   ],
   "main": "index.js",
   "engines": {
