@@ -24,13 +24,30 @@ module.exports = function(str, options) {
   }
   options = options || {};
   return updateCopyright(str, context, options);
-}
+};
+
+/**
+ * Parse the copyright statement and update the year or year range.
+ *
+ * @param {Object} `context`
+ * @return {String}
+ */
 
 function updateYear(context) {
   return context.dateRange
     ? utils.updateYear(context.dateRange, String(utils.year()))
     : utils.year();
 }
+
+/**
+ * Update an existing copyright statement, or create a new one
+ * if one isn't passed.
+ *
+ * @param {String} `str` String with copyright statement
+ * @param {Object} `context` Context to use for rendering the copyright template
+ * @param {Object} `options`
+ * @return {String}
+ */
 
 function updateCopyright(str, context, options) {
   var pkg = utils.loadPkg.sync(process.cwd());
@@ -71,5 +88,8 @@ function updateCopyright(str, context, options) {
   return str.replace(statement, newStatement);
 }
 
+/**
+ * Expose `parse`
+ */
 
 module.exports.parse = utils.parseCopyright;
