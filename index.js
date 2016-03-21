@@ -81,7 +81,7 @@ function updateCopyright(str, context, options) {
 
   // if the original string is no more than a copyright statement
   // just return the new one
-  if (statement.trim() === str.trim()) {
+  if (statement.trim() === str.trim() || opts.statementOnly === true) {
     return newStatement;
   }
 
