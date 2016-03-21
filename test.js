@@ -6,7 +6,7 @@ var update = require('./');
 
 describe('update', function() {
   it('should return a copyright statement with the current year', function() {
-    assert.equal(update(), 'Copyright (c) 2016, Jon Schlinkert.');
+    assert.equal(update(), 'Copyright © 2016, Jon Schlinkert.');
   });
 
   it('should update the year', function() {
@@ -15,8 +15,8 @@ describe('update', function() {
   });
 
   it('should add a copyright symbol if it is missing', function() {
-    assert.equal(update('Copyright 2014-2015, Jon Schlinkert.'), 'Copyright (c) 2014-2016, Jon Schlinkert.');
-    assert.equal(update('Copyright 2016, Jon Schlinkert.'), 'Copyright (c) 2016, Jon Schlinkert.');
+    assert.equal(update('Copyright 2014-2015, Jon Schlinkert.'), 'Copyright © 2014-2016, Jon Schlinkert.');
+    assert.equal(update('Copyright 2016, Jon Schlinkert.'), 'Copyright © 2016, Jon Schlinkert.');
   });
 
   it('should correct the author using the one from package.json', function() {
@@ -67,14 +67,14 @@ describe('update', function() {
   it('should add a complete copyright statement when part of it is missing', function() {
     var opts = {author: 'Jon Schlinkert'};
     assert.equal(update('Copyright (c) 2013.', opts), 'Copyright (c) 2013, 2016, Jon Schlinkert.');
-    assert.equal(update('Copyright 2013', opts), 'Copyright (c) 2013, 2016, Jon Schlinkert.');
-    assert.equal(update('Copyright 2013 Jeff Bob'), 'Copyright (c) 2013, 2016, Jeff Bob.');
-    assert.equal(update('Copyright 2013-2014 Jeff Bob'), 'Copyright (c) 2013-2014, 2016, Jeff Bob.');
-    assert.equal(update('Copyright 2013.', opts), 'Copyright (c) 2013, 2016, Jon Schlinkert.');
-    assert.equal(update('Copyright (c) .', opts), 'Copyright (c) 2016, Jon Schlinkert.');
-    assert.equal(update('Copyright .', opts), 'Copyright (c) 2016, Jon Schlinkert.');
-    assert.equal(update('Copyright', opts), 'Copyright (c) 2016, Jon Schlinkert.');
-    assert.equal(update('Copyright (c) .'), 'Copyright (c) 2016, Jon Schlinkert.');
+    assert.equal(update('Copyright 2013', opts), 'Copyright © 2013, 2016, Jon Schlinkert.');
+    assert.equal(update('Copyright 2013 Jeff Bob'), 'Copyright © 2013, 2016, Jeff Bob.');
+    assert.equal(update('Copyright 2013-2014 Jeff Bob'), 'Copyright © 2013-2014, 2016, Jeff Bob.');
+    assert.equal(update('Copyright 2013.', opts), 'Copyright © 2013, 2016, Jon Schlinkert.');
+    assert.equal(update('Copyright (c) .', opts), 'Copyright © 2016, Jon Schlinkert.');
+    assert.equal(update('Copyright .', opts), 'Copyright © 2016, Jon Schlinkert.');
+    assert.equal(update('Copyright', opts), 'Copyright © 2016, Jon Schlinkert.');
+    assert.equal(update('Copyright (c) .'), 'Copyright © 2016, Jon Schlinkert.');
   });
 });
 
