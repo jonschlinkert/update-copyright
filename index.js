@@ -5,104 +5,71 @@
  * Licensed under the MIT license.
  */
 
-var currentYear = +require('year')();
-var pkg = require('load-pkg').sync(process.cwd());
-var utils = require('./utils');
+var author = require('./lib/author');
+var defaults = require('./lib/defaults');
+var template = require('./lib/template');
+var utils = require('./lib/utils');
 
-/**
- * Parse a copyright statement and return a new, updated
- * copyright statement.
- *
- * @param  {String} `str`
- * @param  {Object} `options`
- * @return {String}
- */
+module.exports = function(str, options) {
+  var context = {};
 
-function updateCopyright(str, options) {
-  if (typeof str === 'undefined') {
-    str = 'Copyright';
+  if (typeof str === 'string') {
+    var match = utils.parseCopyright(str);
+    if (match.length) {
+      context = match[0];
+    }
+  } else {
+    options = str;
+    str = '';
   }
-  return parse(str, options).updated;
+  options = options || {};
+  return updateCopyright(str, context, options);
 }
 
-function parse(str, options) {
-  var string = detect(str);
-  string = str;
-  var opts = utils.merge({}, options);
-  var match = utils.parseCopyright(string);
-  var res = copyright(match[0], opts);
-  var replaced = str.split(string).join(res);
-
-  var obj = {};
-  obj.input = str;
-  obj.string = string;
-  obj.match = match[0];
-  obj.revised = res;
-  obj.updated = replaced;
-  return obj;
+function updateYear(context) {
+  return context.dateRange
+    ? utils.updateYear(context.dateRange, String(utils.year()))
+    : utils.year();
 }
 
-var defaults = {
-  year: currentYear,
-  prefix: 'Copyright',
-  symbol: '(c)'
-};
-
-var template = '<%= prefix %><%= symbol ? (" " + symbol + " ") : "" %><%= years %>, <%= author %>.';
-
-function copyright(match, options) {
-  var opts = utils.merge({verbose: true, template: template}, options);
+function updateCopyright(str, context, options) {
+  var pkg = utils.loadPkg.sync(process.cwd());
+  var opts = utils.merge({template: template}, options);
   var engine = new utils.Engine(opts);
 
-  var ctx = utils.merge({}, defaults, utils.omitEmpty(match), opts);
-  ctx.years = utils.updateYear(ctx.dateRange || currentYear.toString());
-  ctx.author = getAuthor(ctx);
+  // create the template context from defaults, package.json,
+  // context from parsing the original statement, and options.
+  var ctx = utils.merge({}, defaults, pkg, context, opts);
+  ctx.authors = ctx.author = author(ctx, pkg, options);
+  ctx.years = ctx.year = updateYear(ctx);
 
-  return engine.render(opts.template, ctx);
-}
+  var statement = ctx.statement;
 
-function detect(str) {
-  var lines = str.split('\n');
-  var len = lines.length;
-
-  while (len--) {
-    var line = lines[len];
-    line = line.replace(/^[- \t\W._]+/, '');
-    if (/[^\w]Copyright.*\d{4}/i.test(line)) {
-      return line;
-    }
-  }
-  return '';
-}
-
-function getAuthor(match, options) {
-  var opts = utils.merge({}, options);
-
-  if (!match.author) {
-    if (opts.author === false) {
-      return '';
-    }
-    return pkg.author;
+  // if no original statement was found, create one with the template
+  if (typeof statement === 'undefined') {
+    return engine.render(opts.template, ctx);
   }
 
-  if (pkg.author) {
-    if (typeof pkg.author === 'string') {
-      pkg.author = utils.strip(utils.parseAuthor(pkg.author).name);
-    } else if (typeof pkg.author === 'object') {
-      pkg.author = utils.strip(pkg.author.name);
-    }
-
-    // detect misspellings
-    var author = utils.strip(match.author);
-    if (utils.leven(author, pkg.author) < (opts && opts.distance || 4)) {
-      author = pkg.author;
+  // necessary since the copyright regex doesn't match
+  // the trailing dot. If it does later this is future-proof
+  if (statement[statement.length - 1] !== '.') {
+    var ch = statement + '.';
+    if (str.indexOf(ch) !== -1) {
+      statement = ch;
     }
   }
 
-  author = author.replace(/contributors\.?/, '');
-  author = utils.strip(author);
-  return author;
+  // create the new copyright statement
+  var newStatement = engine.render(opts.template, ctx);
+
+  // if the original string is no more than a copyright statement
+  // just return the new one
+  if (statement.trim() === str.trim()) {
+    return newStatement;
+  }
+
+  return str.replace(statement, newStatement);
 }
 
-module.exports = updateCopyright;
-module.exports.parse = parse;
+
+module.exports.parse = utils.parseCopyright;
