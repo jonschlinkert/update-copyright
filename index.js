@@ -51,7 +51,7 @@ function updateYear(context) {
 
 function updateCopyright(str, context, options) {
   var pkg = utils.loadPkg.sync(process.cwd());
-  var opts = utils.merge({template: template}, options);
+  var opts = utils.merge({template: template, copyright: ''}, options);
   var engine = new utils.Engine(opts);
 
   // create the template context from defaults, package.json,
