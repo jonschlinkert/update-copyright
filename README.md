@@ -59,7 +59,7 @@ copyright('Copyright (c) 2014, Jon Shlinert');
 //=> 'Copyright (c) 2014, 2016, Jon Schlinkert.'
 ```
 
-See [the tests](./tests.js) for more examples.
+See [the tests](./test.js) for more examples.
 
 ## Options
 
