@@ -1,8 +1,8 @@
-/**
+/*!
  * update-copyright <https://github.com/jonschlinkert/update-copyright>
  *
- * Copyright (c) 2014, Jon Schlinkert.
- * Licensed under the MIT license.
+ * Copyright © 2017, Jon Schlinkert.
+ * Released under the MIT License.
  */
 
 var author = require('./lib/author');
@@ -11,6 +11,7 @@ var template = require('./lib/template');
 var utils = require('./lib/utils');
 
 module.exports = function(str, options) {
+  options = options || {};
   var context = {};
 
   if (typeof str === 'string') {
@@ -22,7 +23,7 @@ module.exports = function(str, options) {
     options = str;
     str = '';
   }
-  options = options || {};
+
   return updateCopyright(str, context, options);
 };
 
@@ -50,8 +51,14 @@ function updateYear(context) {
  */
 
 function updateCopyright(str, context, options) {
-  var pkg = utils.loadPkg.sync(process.cwd());
+  if (typeof str !== 'string') {
+    options = context;
+    context = str;
+    str = null;
+  }
+
   var opts = utils.merge({template: template, copyright: ''}, options);
+  var pkg = opts.pkg || utils.loadPkg.sync(process.cwd());
   var engine = new utils.Engine(opts);
 
   // create the template context from defaults, package.json,
@@ -59,7 +66,6 @@ function updateCopyright(str, context, options) {
   var ctx = utils.merge({}, defaults, pkg, context, opts);
   ctx.authors = ctx.author = author(ctx, pkg, options);
   ctx.years = ctx.year = updateYear(ctx);
-
   var statement = ctx.statement;
 
   // if no original statement was found, create one with the template
@@ -78,6 +84,9 @@ function updateCopyright(str, context, options) {
 
   // create the new copyright statement
   var newStatement = engine.render(opts.template, ctx);
+  if (str == null) {
+    return newStatement;
+  }
 
   // if the original string is no more than a copyright statement
   // just return the new one
@@ -93,3 +102,7 @@ function updateCopyright(str, context, options) {
  */
 
 module.exports.parse = utils.parseCopyright;
+module.exports.defaults = defaults;
+module.exports.updateYear = updateYear;
+module.exports.template = template;
+module.exports.author = author;
